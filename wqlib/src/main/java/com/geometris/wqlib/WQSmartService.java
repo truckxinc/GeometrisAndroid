@@ -382,28 +382,42 @@ public class WQSmartService extends Service {
     }
     public boolean connect(String address) {
         if(this.mBtAdapter != null && address != null) {
-            if(this.mBluetoothDeviceAddress != null && address.equals(this.mBluetoothDeviceAddress) && this.mGattClient != null) {
-                Log.d(TAG, "WQSS: Trying to use an existing mBluetoothGatt for connection.");
-                if(this.mGattClient.connect()) {
-                    this.mConnectionState = BluetoothAdapter.STATE_CONNECTING;
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
+            // if(this.mBluetoothDeviceAddress != null && address.equals(this.mBluetoothDeviceAddress) && this.mGattClient != null) {
+            //     Log.d(TAG, "WQSS: Trying to use an existing mBluetoothGatt for connection.");
+            //     if(this.mGattClient.connect()) {
+            //         this.mConnectionState = BluetoothAdapter.STATE_CONNECTING;
+            //         return true;
+            //     } else {
+            //         return false;
+            //     }
+            // } else {
                 BluetoothDevice device = this.mBtAdapter.getRemoteDevice(address);
+                Log.d(TAG, "WQSS: Creating new mBluetoothGatt for connection.");
+
                 if(device == null) {
                     Log.w(TAG, "WQSS: Device not found.  Unable to connect.");
                     return false;
                 } else {
-                    this.mGattClient = device.connectGatt(this, false, this.mGattCallbacks);
+
+                     if (VERSION.SDK_INT >= 23) {
+                        Log.w(TAG, "WQSS: Using TRANSPORT_LE parameter");
+
+                        // Fix added for issue where BluetoothGatt would throw status=62
+                        // using TRANSPORT_LE parameter
+                        this.mGattClient = device.connectGatt(this, false, this.mGattCallbacks, 2);
+                    } else {
+                        Log.w(TAG, "WQSS: Without using TRANSPORT_LE parameter");
+
+                        this.mGattClient = device.connectGatt(this, false, this.mGattCallbacks);
+                    }
+
                     this.refreshDeviceCache();
                     Log.d(TAG, "WQSS: Trying to create a new connection.");
                     this.mBluetoothDeviceAddress = address;
                     this.mConnectionState = BluetoothAdapter.STATE_CONNECTING;
                     return true;
                 }
-            }
+            // }
         }
         else {
             Log.w(TAG, "WQSS: BluetoothAdapter not initialized or unspecified address.");
