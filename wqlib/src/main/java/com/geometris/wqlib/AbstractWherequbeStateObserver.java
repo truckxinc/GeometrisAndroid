@@ -34,6 +34,8 @@ public abstract class AbstractWherequbeStateObserver extends BroadcastReceiver {
             this.onDisconnected();
         } else if (action.equals("com.geometris.WQ.ACTION_GATT_SERVICES_DISCOVERED")) {
             this.onDiscovered();
+        } else if (action.equals("com.geometris.WQ.ACTION_GATT_CONNECTION_FAILED")) {
+            this.onError(new WQError(62, "Unknown"));
         } else {
             int code;
             String cause;
