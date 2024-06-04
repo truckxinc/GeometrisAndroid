@@ -400,7 +400,7 @@ public class WQSmartService extends Service {
                     return false;
                 } else {
 
-                     if (VERSION.SDK_INT >= 23) {
+                     if (Build.VERSION.SDK_INT >= 23) {
                         Log.w(TAG, "WQSS: Using TRANSPORT_LE parameter");
 
                         // Fix added for issue where BluetoothGatt would throw status=62
