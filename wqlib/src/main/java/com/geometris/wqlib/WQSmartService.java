@@ -383,15 +383,15 @@ public class WQSmartService extends Service {
     }
     public boolean connect(String address) {
         if(this.mBtAdapter != null && address != null) {
-            // if(this.mBluetoothDeviceAddress != null && address.equals(this.mBluetoothDeviceAddress) && this.mGattClient != null) {
-            //     Log.d(TAG, "WQSS: Trying to use an existing mBluetoothGatt for connection.");
-            //     if(this.mGattClient.connect()) {
-            //         this.mConnectionState = BluetoothAdapter.STATE_CONNECTING;
-            //         return true;
-            //     } else {
-            //         return false;
-            //     }
-            // } else {
+            if(this.mBluetoothDeviceAddress != null && address.equals(this.mBluetoothDeviceAddress) && this.mGattClient != null) {
+                Log.d(TAG, "WQSS: Trying to use an existing mBluetoothGatt for connection.");
+                if(this.mGattClient.connect()) {
+                    this.mConnectionState = BluetoothAdapter.STATE_CONNECTING;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
                 BluetoothDevice device = this.mBtAdapter.getRemoteDevice(address);
                 Log.d(TAG, "WQSS: Creating new mBluetoothGatt for connection.");
 
@@ -418,7 +418,7 @@ public class WQSmartService extends Service {
                     this.mConnectionState = BluetoothAdapter.STATE_CONNECTING;
                     return true;
                 }
-            // }
+            }
         }
         else {
             Log.w(TAG, "WQSS: BluetoothAdapter not initialized or unspecified address.");
