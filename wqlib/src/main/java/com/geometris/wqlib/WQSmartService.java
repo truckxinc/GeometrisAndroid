@@ -119,11 +119,10 @@ public class WQSmartService extends Service {
                     mGattClient = null;
                 }
 
-                String intentAction;
                 if (status == 62) {
                     // Error BLE_HCI_CONN_FAILED_TO_BE_ESTABLISHED thrown by BluetoothGatt
-                    Log.d(TAG, "WQSS: Status code 62 returned by GATT server");
-                    Log.d(TAG, "WQSS: Connection failed, should try to reconnect to device");
+                    Log.w(TAG, "WQSS: Status code 62 returned by GATT server");
+                    Log.w(TAG, "WQSS: Connection failed, should try to reconnect to device");
                     intentAction = "com.geometris.WQ.ACTION_GATT_CONNECTION_FAILED";
                 } else {
                     intentAction = "com.geometris.WQ.ACTION_GATT_DISCONNECTED";
