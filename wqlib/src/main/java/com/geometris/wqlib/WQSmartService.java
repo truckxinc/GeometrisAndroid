@@ -95,14 +95,18 @@ public class WQSmartService extends Service {
     }
 
     /**
-     * Used to call disconnect() for Gatt client in cases where onConnectionStateChange() is not triggered
-     * when bluetooth is disabled. (for example, on samsung devices)
+     * Disconnect from Gatt client
      * @see BluetoothGattCallback
      */
-    public void manualDisconnect () {
-        String intentAction;
+    public void disconnectOnStateChange (int status) {
+
+        if (mConnectionState == BluetoothProfile.STATE_DISCONNECTED) {
+            return;
+        }
 
         mConnectionState = BluetoothProfile.STATE_DISCONNECTED;
+        Log.d(TAG, "WQSS: Device disconnectOnStateChange() " + status);
+
         refreshDeviceCache();
         requestQueue.clear();
         currentRequest = null;
@@ -111,8 +115,17 @@ public class WQSmartService extends Service {
             mGattClient = null;
         }
 
-        intentAction = "com.geometris.WQ.ACTION_GATT_DISCONNECTED";
-        Log.d(TAG, "WQSS: Disconnected from GATT server since bluetooth was disabled");
+        String intentAction;
+
+        if (status == 62) {
+            // Error BLE_HCI_CONN_FAILED_TO_BE_ESTABLISHED thrown by BluetoothGatt
+            Log.w(TAG, "WQSS: Status code 62 returned by GATT server");
+            Log.w(TAG, "WQSS: Connection failed, should try to reconnect to device");
+            intentAction = "com.geometris.WQ.ACTION_GATT_CONNECTION_FAILED";
+        } else {
+            intentAction = "com.geometris.WQ.ACTION_GATT_DISCONNECTED";
+            Log.d(TAG, "WQSS: Disconnected from GATT server.");
+        }
 
         WQSmartService.this.broadcastUpdate(intentAction);
     }
@@ -121,14 +134,13 @@ public class WQSmartService extends Service {
 
         @Override
         public void onEnabled() {
-            Log.d(TAG, "--##-- WQSS: Bluetooth onEnabled()");
-
+            Log.d(TAG, "WQSS: Bluetooth onEnabled()");
         }
 
         @Override
         public void onDisabled() {
-            Log.d(TAG, "--##-- WQSS: Bluetooth onDisabled()");
-//            manualDisconnect();
+            Log.d(TAG, "WQSS: Bluetooth onDisabled()");
+            disconnectOnStateChange(999);  // random value
         }
     }
 
@@ -150,26 +162,8 @@ public class WQSmartService extends Service {
                 Log.d(TAG, "WQSS: Connected to GATT server.");
                 Log.d(TAG, "WQSS: Attempting to start service discovery:" + mGattClient.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                mConnectionState = BluetoothProfile.STATE_DISCONNECTED;
-                refreshDeviceCache();
-                requestQueue.clear();
-                currentRequest = null;
-                if(mGattClient != null) {
-                    mGattClient.close();
-                    mGattClient = null;
-                }
-
-                if (status == 62) {
-                    // Error BLE_HCI_CONN_FAILED_TO_BE_ESTABLISHED thrown by BluetoothGatt
-                    Log.w(TAG, "WQSS: Status code 62 returned by GATT server");
-                    Log.w(TAG, "WQSS: Connection failed, should try to reconnect to device");
-                    intentAction = "com.geometris.WQ.ACTION_GATT_CONNECTION_FAILED";
-                } else {
-                    intentAction = "com.geometris.WQ.ACTION_GATT_DISCONNECTED";
-                    Log.d(TAG, "WQSS: Disconnected from GATT server.");
-                }
-
-                WQSmartService.this.broadcastUpdate(intentAction);
+                Log.d(TAG, "WQSS: onConnectionStateChange disconnectOnStateChange()");
+                disconnectOnStateChange(status);
             }
         }
 
