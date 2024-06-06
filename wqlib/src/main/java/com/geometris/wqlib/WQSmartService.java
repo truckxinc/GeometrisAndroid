@@ -93,6 +93,44 @@ public class WQSmartService extends Service {
     }
 
     /**
+     * Used to call disconnect() for Gatt client in cases where onConnectionStateChange() is not triggered
+     * when bluetooth is disabled. (for example, on samsung devices)
+     * @see BluetoothGattCallback
+     */
+    public void manualDisconnect () {
+        String intentAction;
+
+        mConnectionState = BluetoothProfile.STATE_DISCONNECTED;
+        refreshDeviceCache();
+        requestQueue.clear();
+        currentRequest = null;
+        if(mGattClient != null) {
+            mGattClient.close();
+            mGattClient = null;
+        }
+
+        intentAction = "com.geometris.WQ.ACTION_GATT_DISCONNECTED";
+        Log.d(TAG, "WQSS: Disconnected from GATT server since bluetooth disabled");
+
+        WQSmartService.this.broadcastUpdate(intentAction);
+    }
+
+    class BluetoothStateObserver extends AbstractBluetoothStateObserver {
+
+        @Override
+        public void onEnabled() {
+            Log.d(TAG, "--##-- WQSS: Bluetooth onEnabled()");
+
+        }
+
+        @Override
+        public void onDisabled() {
+            Log.d(TAG, "--##-- WQSS: Bluetooth onDisabled()");
+//            manualDisconnect();
+        }
+    }
+
+    /**
      * This is where most of the interesting stuff happens in response to changes in BLE state for a client.
      */
     private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
