@@ -7,11 +7,10 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * Override this Broadcast receiver to override onE
+ * Receives bluetooth state change broadcasts
+ * Override this Broadcast receiver to override onEnabled, onDisabled.
  */
 public abstract class AbstractBluetoothStateObserver extends BroadcastReceiver {
-
-    private String TAG = "BluetoothStateObserver";
 
     public AbstractBluetoothStateObserver() {
 
@@ -26,14 +25,15 @@ public abstract class AbstractBluetoothStateObserver extends BroadcastReceiver {
      */
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        String TAG = "BluetoothStateObserver";
         Log.w(TAG, "onReceive: " + action);
 
         if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
             if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
-                Log.w(TAG, "--##-- BLuetooth disabled");
+                Log.d(TAG, "BLuetooth disabled");
                 this.onDisabled();
             } else if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) {
-                Log.w(TAG, "--##-- BLuetooth enabled **");
+                Log.d(TAG, "BLuetooth enabled **");
                 this.onEnabled();
             }
         }

@@ -73,6 +73,9 @@ public class WQSmartService extends Service {
     public BluetoothGatt mGattClient = null;
     private int mConnectionState = BluetoothAdapter.STATE_DISCONNECTED;
 
+    /**
+     * Broadcast receiver for bluetooth status
+     */
     BluetoothStateObserver mBluetoothStateObserver;
 
     // Characteristic currently waiting to have a notification value written to it.
@@ -139,8 +142,8 @@ public class WQSmartService extends Service {
 
         @Override
         public void onDisabled() {
-            Log.d(TAG, "WQSS: Bluetooth onDisabled()");
-            disconnectOnStateChange(999);  // random value
+            Log.d(TAG, "WQSS: Bluetooth onDisabled() disconnectOnStateChange");
+            disconnectOnStateChange(99999);  // random value
         }
     }
 
@@ -393,6 +396,10 @@ public class WQSmartService extends Service {
         Log.d(TAG, "WQSS: onDestroy");
         if (mGattClient != null)
             mGattClient.close();
+
+        if (mBluetoothStateObserver != null) {
+            unregisterReceiver(mBluetoothStateObserver);
+        }
         super.onDestroy();
     }
 
