@@ -353,6 +353,10 @@ public class WQSmartService extends Service {
     }
 
     public boolean initialize(WherequbeService wqService) {
+
+        BluetoothStateObserver mBluetoothStateObserver = new BluetoothStateObserver();
+        mBluetoothStateObserver.register(this);
+
         if(this.mBtManager == null) {
             this.mBtManager = (BluetoothManager)this.getSystemService(Context.BLUETOOTH_SERVICE);
             if(this.mBtManager == null) {
@@ -471,6 +475,7 @@ public class WQSmartService extends Service {
             return false;
         }
     }
+
 
     public void disconnect() {
         if(this.mBtAdapter != null && this.mGattClient != null) {
