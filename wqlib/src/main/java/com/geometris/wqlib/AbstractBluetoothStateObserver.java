@@ -4,9 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.util.Log;
-import android.support.v4.content.LocalBroadcastManager;
 
 /**
  * Override this Broadcast receiver to override onE
@@ -51,26 +49,4 @@ public abstract class AbstractBluetoothStateObserver extends BroadcastReceiver {
      */
     public abstract void onDisabled();
 
-
-    private static IntentFilter getBluetoothEventsIntentFilter() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        return intentFilter;
-    }
-
-    /**
-     * Registers this broadcast receiver.
-     * @param context The context in which the receiver is running.
-     */
-    public void register(Context context) {
-        LocalBroadcastManager.getInstance(context).registerReceiver(this, getBluetoothEventsIntentFilter());
-    }
-
-    /**
-     * Unregisters this broadcast receiver.
-     * @param context The context in which the receiver is running.
-     */
-    public void unregister(Context context) {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-    }
 }

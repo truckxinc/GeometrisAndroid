@@ -12,6 +12,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -72,6 +73,7 @@ public class WQSmartService extends Service {
     public BluetoothGatt mGattClient = null;
     private int mConnectionState = BluetoothAdapter.STATE_DISCONNECTED;
 
+    BluetoothStateObserver mBluetoothStateObserver;
 
     // Characteristic currently waiting to have a notification value written to it.
     private BluetoothGattCharacteristic mPendingCharacteristic = null;
@@ -354,8 +356,11 @@ public class WQSmartService extends Service {
 
     public boolean initialize(WherequbeService wqService) {
 
-        BluetoothStateObserver mBluetoothStateObserver = new BluetoothStateObserver();
-        mBluetoothStateObserver.register(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+        mBluetoothStateObserver = new BluetoothStateObserver();
+        registerReceiver(mBluetoothStateObserver, intentFilter);
 
         if(this.mBtManager == null) {
             this.mBtManager = (BluetoothManager)this.getSystemService(Context.BLUETOOTH_SERVICE);
