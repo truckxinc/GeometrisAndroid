@@ -110,7 +110,7 @@ public class WQSmartService extends Service {
         }
 
         intentAction = "com.geometris.WQ.ACTION_GATT_DISCONNECTED";
-        Log.d(TAG, "WQSS: Disconnected from GATT server since bluetooth disabled");
+        Log.d(TAG, "WQSS: Disconnected from GATT server since bluetooth was disabled");
 
         WQSmartService.this.broadcastUpdate(intentAction);
     }
