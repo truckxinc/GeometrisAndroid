@@ -1,5 +1,7 @@
 # Geometris Mobile Resources
 
+[![](https://www.jitpack.io/v/truckxinc/GeometrisAndroid.svg)](https://www.jitpack.io/#truckxinc/GeometrisAndroid)
+
 To add the library as a dependency to your project,
 
 1. Add the jitpack maven to your project root level build script:
