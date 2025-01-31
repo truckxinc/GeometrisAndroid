@@ -131,7 +131,6 @@ public class WQSmartService extends Service {
             Log.d(TAG, "WQSS: Disconnected from GATT server.");
         }
 
-        // TODO: add  status code here
         WQSmartService.this.broadcastUpdate(intentAction, "reason", String.valueOf(status));
     }
 
@@ -163,7 +162,7 @@ public class WQSmartService extends Service {
                 currentRequest = null;
                 intentAction = "com.geometris.WQ.ACTION_GATT_CONNECTED";
                 mConnectionState =  BluetoothProfile.STATE_CONNECTED;
-                broadcastUpdate(intentAction, null, null);
+                broadcastUpdate(intentAction, "reason", status + " -> " + newState);
                 Log.d(TAG, "WQSS: Connected to GATT server.");
                 Log.d(TAG, "WQSS: Attempting to start service discovery:" + mGattClient.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
