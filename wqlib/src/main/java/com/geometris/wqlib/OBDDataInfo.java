@@ -443,7 +443,7 @@ public class OBDDataInfo {
                                 break;
                             case 0x18:
                                 double eHrs = WQData.getIntValue(WQData.FORMAT_UINT32, 0, tbytes);
-                                unidentifiedEvent.setEngTotalHours(eHrs);
+                                unidentifiedEvent.setEngTotalHours(eHrs / 10); //its divided by 10 because device is sending (hours times 10)
                                 break;
                             case 0x19:
                                 double vSpeed = WQData.getIntValue(WQData.FORMAT_UINT32, 0, tbytes);

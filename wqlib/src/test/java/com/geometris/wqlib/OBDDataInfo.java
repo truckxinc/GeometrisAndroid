@@ -23,24 +23,25 @@ import java.util.Set;
  * Not to be used outside of the WQSmartService class.
  */
 public class OBDDataInfo {
-    public static final String TAG ="GeometrisManager";
-    public static final int PACKET_COUNT_OFFSET = 0, PACKET_IDENTIFIER=1,PROTOCOL_IDENTIFIER = 2,TOTAL_PACKET_INDEX=3;
+    public static final String TAG = "GeometrisManager";
+    public static final int PACKET_COUNT_OFFSET = 0, PACKET_IDENTIFIER = 1, PROTOCOL_IDENTIFIER = 2,
+            TOTAL_PACKET_INDEX = 3;
     public GeoData geoData = null;
     private Byte protocolId;
     private Byte totalPacket;
     private Set<Byte> pi;
     private HashMap<Byte, byte[]> packetList;
-    //private ArrayList<Byte> pi;
+    // private ArrayList<Byte> pi;
     // private ArrayList<byte[]> packetList;
     private boolean complete;
     StringBuilder VINsb = new StringBuilder();
 
     public OBDDataInfo() {
-        //  this.pi = new ArrayList<Byte>();
+        // this.pi = new ArrayList<Byte>();
         this.pi = new HashSet<>();
         this.protocolId = -1;
-        this.totalPacket=0;
-        //this.packetList = new ArrayList<byte[]>();
+        this.totalPacket = 0;
+        // this.packetList = new ArrayList<byte[]>();
         this.packetList = new HashMap<>();
         this.geoData = new GeoData();
         this.complete = false;
@@ -48,12 +49,13 @@ public class OBDDataInfo {
 
     /**
      *
-     * @param protocolId specifies protocol version of interpreting and handling messages
+     * @param protocolId specifies protocol version of interpreting and handling
+     *                   messages
      */
-    public void setProtocolId(Byte protocolId){
+    public void setProtocolId(Byte protocolId) {
         this.protocolId = protocolId;
-        if(protocolId==0){
-            this.totalPacket=7;
+        if (protocolId == 0) {
+            this.totalPacket = 7;
         }
 
     }
@@ -62,16 +64,15 @@ public class OBDDataInfo {
      *
      * @return current protocol describing message format and handling logic
      */
-    public Byte getProtocolId(){
+    public Byte getProtocolId() {
         return protocolId;
     }
-
 
     /**
      *
      * @param totalPacket value for total packet buffer size
      */
-    public void setTotalPacket(Byte totalPacket){
+    public void setTotalPacket(Byte totalPacket) {
         this.totalPacket = totalPacket;
     }
 
@@ -79,14 +80,16 @@ public class OBDDataInfo {
      *
      * @return how many can fit in the buffer
      */
-    public Byte getTotalPacket(){ return this.totalPacket; }
+    public Byte getTotalPacket() {
+        return this.totalPacket;
+    }
 
     /**
      *
      * @return returns true if there is no more room to add further packets.
      */
     public boolean isFull() {
-        if(totalPacket>0) {
+        if (totalPacket > 0) {
             if (protocolId == 0)
                 return pi.size() >= 7;
             else if (protocolId >= 1)
@@ -97,33 +100,31 @@ public class OBDDataInfo {
 
     /**
      * Adds a packet to the end of the buffer
+     * 
      * @param value packet to buffer
      */
-    public void insertPacket(byte[] value)
-    {
-        if(value.length<=0) return;
+    public void insertPacket(byte[] value) {
+        if (value.length <= 0)
+            return;
 
         Byte packet_count = value[PACKET_COUNT_OFFSET];
         Log.d(TAG, "OBD Raw Data:");
-        String logString="";
+        String logString = "";
         StringBuilder sb = new StringBuilder();
-        for(byte c : value) {
-            sb.append(String.format("%02x, ",c));
+        for (byte c : value) {
+            sb.append(String.format("%02x, ", c));
         }
         logString = new String(sb);
         Log.d(TAG, logString + "\r\n");
 
-        if(packet_count ==0 )
-        {
-            if(value.length>1 && value[PACKET_IDENTIFIER] == (byte) 0xCB)
-            {
+        if (packet_count == 0) {
+            if (value.length > 1 && value[PACKET_IDENTIFIER] == (byte) 0xCB) {
                 Byte protocol_id = value[PROTOCOL_IDENTIFIER];
                 Byte totalPacket = value[TOTAL_PACKET_INDEX];
                 setProtocolId(protocol_id);
-                setTotalPacket( totalPacket);
-            }
-            else{
-                setProtocolId( (byte) 0);
+                setTotalPacket(totalPacket);
+            } else {
+                setProtocolId((byte) 0);
             }
         }
         insertIndex(packet_count);
@@ -141,18 +142,21 @@ public class OBDDataInfo {
 
     /**
      * Add packet to the buffer
-     * @param index packet index
+     * 
+     * @param index  packet index
      * @param packet packet content
      */
-    public void insertPacket(Byte index, byte[] packet){
+    public void insertPacket(Byte index, byte[] packet) {
         packetList.put(index, packet);
-   }
+    }
 
     /**
      *
      * @return current packet list.
      */
-    public HashMap<Byte, byte[]> getPacketList(){ return packetList;};
+    public HashMap<Byte, byte[]> getPacketList() {
+        return packetList;
+    };
 
     public void insertVIN(Byte index, String data) {
         if (index == 0) {
@@ -462,7 +466,7 @@ public class OBDDataInfo {
                             case 0x18:
                                 double eHrs = WQData.getIntValue(WQData.FORMAT_UINT32, 0, tbytes);
                                 //    Log.d(TAG, "Engine Hours:" +eHrs +", ");
-                                unidentifiedEvent.setEngTotalHours(eHrs);
+                                unidentifiedEvent.setEngTotalHours(eHrs / 10);
                                         /*val contains unidentified driver event enginehours*/
                                 break;
                             case 0x19:
