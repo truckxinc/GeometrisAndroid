@@ -29,7 +29,7 @@ dependencies {
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'joda-time:joda-time:2.9.9'
 
-   implementation 'com.github.truckxinc:GeometrisAndroid:1.0.14'
+   implementation 'com.github.truckxinc:GeometrisAndroid:1.0.15'
 }
 ```
 
